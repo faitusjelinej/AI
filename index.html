@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<body style="margin:40px;font-family:Arial">
+    <h2>Weather Chat Assistant</h2>
+    <div id="chat" style="border:1px solid #ccc;height:400px;padding:10px;overflow:auto;margin-bottom:10px"></div>
+    <input type="text" id="messageInput" placeholder="Ask: What's the weather in Chennai?" style="width:400px;padding:10px">
+    <button id="sendButton">Send</button>
+    
+    <script>
+        document.getElementById('sendButton').onclick = async function() {
+            const input = document.getElementById('messageInput');
+            const chatDiv = document.getElementById('chat');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            chatDiv.innerHTML += `<div><b>You:</b> ${message}</div>`;
+            input.value = '';
+            
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: message})
+            });
+            const data = await response.json();
+            
+            chatDiv.innerHTML += `<div><b>Bot:</b> ${data.response}</div><br>`;
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+            input.focus();
+        }
+        
+        document.getElementById('messageInput').onkeypress = function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('sendButton').click();
+            }
+        }
+        
+        document.getElementById('messageInput').focus();
+    </script>
+</body>
+</html>
